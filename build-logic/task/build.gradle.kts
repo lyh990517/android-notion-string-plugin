@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
+    implementation(libs.gson)
 }
 
 gradlePlugin {
