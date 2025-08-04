@@ -6,6 +6,8 @@ import org.gradle.api.Project
 class TaskPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.tasks.register("customTask") {
+            group = "notion"
+
             doLast {
                 println("Custom task executed for ${project.name}")
             }
