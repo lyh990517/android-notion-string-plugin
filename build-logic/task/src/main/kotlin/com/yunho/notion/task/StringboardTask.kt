@@ -13,7 +13,6 @@ internal abstract class StringboardTask : DefaultTask() {
     fun download() {
         val targetDir = "${project.rootDir}/app/src/main/res"
         val queryBuilder = NotionQueryBuilder()
-            .addMultiSelect("Part", Query.CONTAINS, "Client")
         val allResults = mutableListOf<JsonElement>()
         var startCursor: String? = null
         var hasMore: Boolean
@@ -21,9 +20,9 @@ internal abstract class StringboardTask : DefaultTask() {
         do {
             val query = queryBuilder.build(startCursor = startCursor)
             val (results, nextCursor, hasNext) = queryNotionApi(
-                "apiKey",
-                "databaseId",
-                query
+                notionApiKey = "API_KEY",
+                databaseId = "DATABASE_ID",
+                queryBody = query
             )
             allResults += results.toList()
             startCursor = nextCursor
@@ -32,9 +31,9 @@ internal abstract class StringboardTask : DefaultTask() {
 
         val baseRes = File(targetDir)
         val dirs = mapOf(
-            Language.KOR to File(baseRes, "values"),
+            Language.KOR to File(baseRes, "values-ko"),
             Language.JPN to File(baseRes, "values-ja"),
-            Language.ENG to File(baseRes, "values-en")
+            Language.ENG to File(baseRes, "values")
         )
 
         dirs.forEach { (lang, dir) ->
@@ -62,11 +61,11 @@ internal abstract class StringboardTask : DefaultTask() {
             for (elem in results) {
                 val props = elem.asJsonObject.getAsJsonObject("properties")
                 val idText =
-                    extractRichText(props, "Client ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
+                    extractRichText(props, "Resource ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
                 val rawValue = when (language) {
-                    Language.KOR -> extractRichText(props, "String: BASE")
+                    Language.KOR -> extractRichText(props, "String: KOR")
                     Language.JPN -> extractRichText(props, "String: JPN")
-                    Language.ENG -> extractRichText(props, "String: ENG")
+                    Language.ENG -> extractRichText(props, "String: BASE")
                 }
                 val processed = processPlaceholders(rawValue.escapeXml())
 
