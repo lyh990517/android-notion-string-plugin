@@ -1,13 +1,12 @@
 package com.yunho.notion.task
 
 import com.google.gson.JsonObject
-import org.gradle.internal.declarativedsl.analysis.DefaultDataClass.Empty.properties
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-object NotionUtil {
+object NotionService {
     private val client = HttpClient.newHttpClient()
 
     fun queryNotionApi(
@@ -20,11 +19,10 @@ object NotionUtil {
             notionApiKey = notionApiKey,
             queryBody = queryBody
         )
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-        if (response.statusCode() !in 200..299) {
-            error("❌ Notion API error: HTTP ${response.statusCode()} → ${response.body()}")
-        }
+        val response = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        )
 
         return NotionDatabaseResponse.create(response)
     }
