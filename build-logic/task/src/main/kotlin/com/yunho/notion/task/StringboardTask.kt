@@ -56,21 +56,22 @@ internal abstract class StringboardTask : DefaultTask() {
         File(
             dir,
             "strings.xml"
-        ).bufferedWriter().use { w ->
-            w.appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
-            w.appendLine("""<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""")
+        ).bufferedWriter()
+            .use { writer ->
+                writer.appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
+                writer.appendLine("""<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""")
 
-            for (element in results) {
-                val properties = element.asJsonObject.getAsJsonObject("properties")
-                val resourceId = properties.extractRichText(key = "Resource ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
-                val stringValue = properties.extractRichText(key = language.notionColumn)
-                val processedString = processPlaceholders(raw = stringValue.escapeXml())
+                for (element in results) {
+                    val properties = element.asJsonObject.getAsJsonObject("properties")
+                    val resourceId = properties.extractRichText(key = "Resource ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
+                    val stringValue = properties.extractRichText(key = language.notionColumn)
+                    val processedString = processPlaceholders(raw = stringValue.escapeXml())
 
-                w.appendLine("""    <string name="$resourceId">$processedString</string>""")
+                    writer.appendLine("""    <string name="$resourceId">$processedString</string>""")
+                }
+
+                writer.appendLine("</resources>")
             }
-
-            w.appendLine("</resources>")
-        }
     }
 
     fun processPlaceholders(raw: String): String {
@@ -83,32 +84,6 @@ internal abstract class StringboardTask : DefaultTask() {
             val tag = """<xliff:g id="$idName" example="$name">$placeholder</xliff:g>"""
             index++
             tag
-        }
-    }
-
-    enum class Language(
-        val notionColumn: String,
-        val resDir: String
-    ) {
-        KOR(
-            notionColumn = "String: KOR",
-            resDir = "values-ko"
-        ),
-        JPN(
-            notionColumn = "String: JPN",
-            resDir = "values-ja"
-        ),
-        ENG(
-            notionColumn = "String: BASE",
-            resDir = "values"
-        );
-
-        companion object {
-            fun createDir(baseDir: File): Map<Language, File> {
-                return values().associateWith { language ->
-                    File(baseDir, language.resDir)
-                }
-            }
         }
     }
 }
