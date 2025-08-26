@@ -20,8 +20,8 @@ internal abstract class StringboardTask : DefaultTask() {
         do {
             val query = queryBuilder.build(startCursor = startCursor)
             val (results, nextCursor, hasNext) = queryNotionApi(
-                notionApiKey = "API_KEY",
-                databaseId = "DATABASE_ID",
+                notionApiKey = "",
+                databaseId = "",
                 queryBody = query
             )
             allResults += results.toList()
@@ -29,15 +29,14 @@ internal abstract class StringboardTask : DefaultTask() {
             hasMore = hasNext
         } while (hasMore)
 
-        val baseRes = File(targetDir)
-        val dirs = mapOf(
-            Language.KOR to File(baseRes, "values-ko"),
-            Language.JPN to File(baseRes, "values-ja"),
-            Language.ENG to File(baseRes, "values")
-        )
+        val dirs = Language.createDir(baseDir = File(targetDir))
 
         dirs.forEach { (lang, dir) ->
-            writeStringsXml(lang, dir, JsonArray().apply { allResults.forEach { add(it) } })
+            writeStringsXml(
+                language = lang,
+                dir = dir,
+                results = JsonArray().apply { allResults.forEach { add(it) } }
+            )
             println("✅ Generated ${lang.name.uppercase()} → ${dir.relativeTo(project.projectDir)}")
         }
     }
@@ -54,22 +53,20 @@ internal abstract class StringboardTask : DefaultTask() {
         results: JsonArray
     ) {
         dir.mkdirs()
-        File(dir, "strings.xml").bufferedWriter().use { w ->
+        File(
+            dir,
+            "strings.xml"
+        ).bufferedWriter().use { w ->
             w.appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
             w.appendLine("""<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""")
 
-            for (elem in results) {
-                val props = elem.asJsonObject.getAsJsonObject("properties")
-                val idText =
-                    extractRichText(props, "Resource ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
-                val rawValue = when (language) {
-                    Language.KOR -> extractRichText(props, "String: KOR")
-                    Language.JPN -> extractRichText(props, "String: JPN")
-                    Language.ENG -> extractRichText(props, "String: BASE")
-                }
-                val processed = processPlaceholders(rawValue.escapeXml())
+            for (element in results) {
+                val properties = element.asJsonObject.getAsJsonObject("properties")
+                val resourceId = properties.extractRichText(key = "Resource ID").lowercase().replace(Regex("[^a-z0-9_]"), "_")
+                val stringValue = properties.extractRichText(key = language.notionColumn)
+                val processedString = processPlaceholders(raw = stringValue.escapeXml())
 
-                w.appendLine("""    <string name="$idText">$processed</string>""")
+                w.appendLine("""    <string name="$resourceId">$processedString</string>""")
             }
 
             w.appendLine("</resources>")
@@ -89,9 +86,29 @@ internal abstract class StringboardTask : DefaultTask() {
         }
     }
 
-    enum class Language {
-        KOR,
-        JPN,
-        ENG
+    enum class Language(
+        val notionColumn: String,
+        val resDir: String
+    ) {
+        KOR(
+            notionColumn = "String: KOR",
+            resDir = "values-ko"
+        ),
+        JPN(
+            notionColumn = "String: JPN",
+            resDir = "values-ja"
+        ),
+        ENG(
+            notionColumn = "String: BASE",
+            resDir = "values"
+        );
+
+        companion object {
+            fun createDir(baseDir: File): Map<Language, File> {
+                return values().associateWith { language ->
+                    File(baseDir, language.resDir)
+                }
+            }
+        }
     }
 }
