@@ -1,6 +1,5 @@
 package com.yunho.notion.task
 
-import com.google.gson.JsonObject
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -25,35 +24,6 @@ object NotionService {
         )
 
         return NotionDatabaseResponse.create(response)
-    }
-
-    fun JsonObject.extractRichText(key: String): String {
-        val property = this[key]?.asJsonObject ?: return ""
-
-        return when (property["type"].asString) {
-            "title" -> property.getAsJsonArray("title")
-                .joinToString("") { it.asJsonObject["plain_text"].asString }
-
-            "rich_text" -> property.getAsJsonArray("rich_text")
-                .joinToString("") { it.asJsonObject["plain_text"].asString }
-
-            "formula" -> property
-                .getAsJsonObject("formula")
-                .get("string")
-                ?.asString
-                .orEmpty()
-
-            "select" -> property
-                .getAsJsonObject("select")
-                ?.get("name")
-                ?.asString
-                .orEmpty()
-
-            "multi_select" -> property.getAsJsonArray("multi_select")
-                .joinToString(", ") { it.asJsonObject["name"].asString }
-
-            else -> ""
-        }
     }
 
     private fun createRequest(
