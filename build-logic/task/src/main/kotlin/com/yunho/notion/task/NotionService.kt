@@ -18,6 +18,7 @@ object NotionService {
             notionApiKey = notionApiKey,
             queryBody = queryBody
         )
+
         val response = client.send(
             request,
             HttpResponse.BodyHandlers.ofString()

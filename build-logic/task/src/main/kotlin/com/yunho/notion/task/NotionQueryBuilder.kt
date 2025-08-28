@@ -59,7 +59,7 @@ class NotionQueryBuilder {
     {
       "filter": {
         "and": [
-$joined
+            $joined
         ]
       },
       "page_size": $pageSize$cursorPart

@@ -23,6 +23,7 @@ internal abstract class StringboardTask : DefaultTask() {
                 databaseId = "",
                 queryBody = query
             )
+
             allResults += results.toList()
             startCursor = nextCursor
             hasMore = hasNext
