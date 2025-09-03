@@ -32,7 +32,6 @@ import com.yunho.notion.task.Key.XML_RESOURCES_CLOSE
 import com.yunho.notion.task.Key.XML_RESOURCES_OPEN
 import com.yunho.notion.task.Key.XML_STRING_TEMPLATE
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -54,11 +53,6 @@ object JsonParser {
         }
     }
 
-    private data class XmlData(
-        val resourceId: String,
-        val content: String
-    )
-
     fun createStringsXml(
         path: String,
         results: JsonArray
@@ -77,9 +71,22 @@ object JsonParser {
                     writer.appendLine(XML_RESOURCES_OPEN)
 
                     results
-                        .map { it.processString(language = language) }
-                        .forEach { xmlData ->
-                            writer.appendLine(XML_STRING_TEMPLATE.format(xmlData.resourceId, xmlData.content))
+                        .mapNotNull { element ->
+                            element.jsonObject[PROPERTIES]?.jsonObject
+                        }.map { properties ->
+                            val resourceId = properties
+                                .extractRichText(key = RESOURCE_ID)
+                                .lowercase()
+                                .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
+
+                            val content = properties
+                                .extractRichText(key = language.notionColumn)
+                                .escapeXml()
+                                .processPlaceholders()
+
+                            resourceId to content
+                        }.forEach { (resourceId, content) ->
+                            writer.appendLine(XML_STRING_TEMPLATE.format(resourceId, content))
                         }
 
                     writer.appendLine(XML_RESOURCES_CLOSE)
@@ -89,33 +96,16 @@ object JsonParser {
         }
     }
 
-    private fun JsonElement.processString(language: Language): XmlData {
-        val properties = this.jsonObject[PROPERTIES]?.jsonObject ?: return XmlData(
-            resourceId = "",
-            content = ""
-        )
-        val resourceId = properties.extractRichText(key = RESOURCE_ID)
-            .lowercase()
-            .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
-        val stringValue = properties.extractRichText(key = language.notionColumn)
-        val processedString = processPlaceholders(raw = stringValue.escapeXml())
-
-        return XmlData(
-            resourceId = resourceId,
-            content = processedString
-        )
-    }
-
     private fun String.escapeXml() = replace(AMPERSAND, AMPERSAND_ESCAPED)
         .replace(LESS_THAN, LESS_THAN_ESCAPED)
         .replace(GREATER_THAN, GREATER_THAN_ESCAPED)
         .replace(QUOTE, QUOTE_ESCAPED)
         .replace(APOSTROPHE, APOSTROPHE_ESCAPED)
 
-    private fun processPlaceholders(raw: String): String {
+    private fun String.processPlaceholders(): String {
         var index = 1
 
-        return Regex(PLACEHOLDER_REGEX).replace(raw) { match ->
+        return Regex(PLACEHOLDER_REGEX).replace(this) { match ->
             val name = match.groupValues[1]
             val idName = name.lowercase().replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
             val placeholder = PLACEHOLDER_FORMAT.format(index)
