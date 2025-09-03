@@ -2,9 +2,6 @@ package com.yunho.notion.task
 
 import java.io.File
 
-/**
- * Android 문자열 리소스 XML 파일을 생성하는 클래스
- */
 object StringResourceGenerator {
     private const val STRINGS_XML = "strings.xml"
     private const val XML_HEADER = """<?xml version="1.0" encoding="utf-8"?>"""
