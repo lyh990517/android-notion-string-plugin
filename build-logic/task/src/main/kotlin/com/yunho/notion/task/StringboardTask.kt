@@ -11,7 +11,7 @@ internal abstract class StringboardTask : DefaultTask() {
     @TaskAction
     fun download() {
         val queryBuilder = NotionQueryBuilder()
-        val allResults = mutableListOf<JsonElement>()
+        val jsonElements = mutableListOf<JsonElement>()
         var startCursor: String? = null
         var hasMore: Boolean
 
@@ -23,11 +23,11 @@ internal abstract class StringboardTask : DefaultTask() {
                 queryBody = query
             )
 
-            allResults += response.results.toList()
+            jsonElements += response.results.toList()
             startCursor = response.nextCursor
             hasMore = response.hasMore
         } while (hasMore)
 
-        JsonArray(allResults).createStringsXml(path = "${project.rootDir}/app/src/main/res")
+        JsonArray(jsonElements).createStringsXml(path = "${project.rootDir}/app/src/main/res")
     }
 }
