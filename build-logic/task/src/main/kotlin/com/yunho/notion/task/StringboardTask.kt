@@ -10,7 +10,6 @@ import java.io.File
 internal abstract class StringboardTask : DefaultTask() {
     @TaskAction
     fun download() {
-        val targetDir = "${project.rootDir}/app/src/main/res"
         val queryBuilder = NotionQueryBuilder()
         val allResults = mutableListOf<JsonElement>()
         var startCursor: String? = null
@@ -18,27 +17,29 @@ internal abstract class StringboardTask : DefaultTask() {
 
         do {
             val query = queryBuilder.build(startCursor = startCursor)
-            val (results, nextCursor, hasNext) = queryNotionApi(
+            val response = queryNotionApi(
                 notionApiKey = "",
                 databaseId = "",
                 queryBody = query
             )
 
-            allResults += results.toList()
-            startCursor = nextCursor
-            hasMore = hasNext
+            allResults += response.results.toList()
+            startCursor = response.nextCursor
+            hasMore = response.hasMore
         } while (hasMore)
 
-        val dirs = Language.createDir(baseDir = File(targetDir))
+        val targetDir = "${project.rootDir}/app/src/main/res"
 
-        dirs.forEach { (lang, dir) ->
+        Language.values().forEach { language ->
+            val directory = File(targetDir, language.resDir)
+
             XmlProcesser.writeStringsXml(
-                language = lang,
-                dir = dir,
+                language = language,
+                dir = directory,
                 results = JsonArray(allResults)
             )
 
-            println("✅ Generated ${lang.name.uppercase()} → ${dir.relativeTo(project.projectDir)}")
+            println("✅ Generated ${language.name.uppercase()} → ${directory.relativeTo(project.projectDir)}")
         }
     }
 }
