@@ -1,5 +1,6 @@
 package com.yunho.notion.task
 
+import com.yunho.notion.task.NotionResponse.Companion.parseToNotionResponse
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -12,7 +13,7 @@ object NotionService {
         notionApiKey: String,
         databaseId: String,
         queryBody: String
-    ): NotionDatabaseResponse {
+    ): NotionResponse {
         val request = createRequest(
             databaseId = databaseId,
             notionApiKey = notionApiKey,
@@ -24,7 +25,7 @@ object NotionService {
             HttpResponse.BodyHandlers.ofString()
         )
 
-        return NotionDatabaseResponse.create(response)
+        return response.parseToNotionResponse()
     }
 
     private fun createRequest(

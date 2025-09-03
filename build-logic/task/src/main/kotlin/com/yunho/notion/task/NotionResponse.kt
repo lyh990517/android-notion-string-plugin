@@ -7,7 +7,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.net.http.HttpResponse
 
-data class NotionDatabaseResponse(
+data class NotionResponse(
     val results: JsonArray,
     val nextCursor: String?,
     val hasMore: Boolean
@@ -17,14 +17,13 @@ data class NotionDatabaseResponse(
         private const val NEXT_CURSOR = "next_cursor"
         private const val HAS_MORE = "has_more"
 
-        fun create(response: HttpResponse<String>): NotionDatabaseResponse {
-            val body = response.body()
-            val json = Json.parseToJsonElement(body).jsonObject
+        fun HttpResponse<String>.parseToNotionResponse(): NotionResponse {
+            val json = Json.parseToJsonElement(body()).jsonObject
             val results = json[RESULTS]!!.jsonArray
             val nextCursor = json[NEXT_CURSOR]?.takeIf { !it.toString().equals("null", true) }?.jsonPrimitive?.content
             val hasMore = json[HAS_MORE]?.jsonPrimitive?.content?.toBoolean() ?: false
 
-            return NotionDatabaseResponse(
+            return NotionResponse(
                 results = results,
                 nextCursor = nextCursor,
                 hasMore = hasMore
