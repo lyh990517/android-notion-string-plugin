@@ -1,33 +1,42 @@
 package com.yunho.notion.task
 
-import com.yunho.notion.task.JsonParser.createStringsXml
-import com.yunho.notion.task.NotionService.queryNotionApi
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 internal abstract class StringboardTask : DefaultTask() {
+
+    companion object {
+        private const val OUTPUT_PATH = "app/src/main/res"
+    }
+
     @TaskAction
     fun download() {
+        val notionData = fetchAllNotionData()
+        val outputPath = "${project.rootDir}/$OUTPUT_PATH"
+
+        StringResourceGenerator.generateAll(notionData, outputPath)
+    }
+
+    private fun fetchAllNotionData(): List<NotionPageData> {
         val queryBuilder = NotionQueryBuilder()
-        val jsonElements = mutableListOf<JsonElement>()
-        var startCursor: String? = null
-        var hasMore: Boolean
+        val allPages = mutableListOf<NotionPageData>()
+        var cursor: String? = null
 
         do {
-            val query = queryBuilder.build(startCursor = startCursor)
-            val response = queryNotionApi(
-                notionApiKey = "",
-                databaseId = "",
-                queryBody = query
+            val query = queryBuilder.build(startCursor = cursor)
+            val response = NotionService.queryDatabase(
+                apiKey = getNotionApiKey(),
+                databaseId = getDatabaseId(),
+                query = query
             )
 
-            jsonElements += response.results.toList()
-            startCursor = response.nextCursor
-            hasMore = response.hasMore
-        } while (hasMore)
+            allPages += response.pages
+            cursor = response.nextCursor
+        } while (response.hasMore)
 
-        JsonArray(jsonElements).createStringsXml(path = "${project.rootDir}/app/src/main/res")
+        return allPages
     }
+
+    private fun getNotionApiKey(): String = ""  // TODO: Get from project properties
+    private fun getDatabaseId(): String = ""   // TODO: Get from project properties
 }
