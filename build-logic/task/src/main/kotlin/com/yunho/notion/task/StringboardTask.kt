@@ -4,10 +4,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 internal abstract class StringboardTask : DefaultTask() {
-
-    companion object {
-        private const val OUTPUT_PATH = "app/src/main/res"
-    }
+    private val notionApiKey = ""
+    private val stringDatabaseId = ""
 
     @TaskAction
     fun download() {
@@ -19,14 +17,19 @@ internal abstract class StringboardTask : DefaultTask() {
 
     private fun fetchAllNotionData(): List<NotionPageData> {
         val queryBuilder = NotionQueryBuilder()
+            .addSelect(
+                property = "Status",
+                query = Query.EQUALS,
+                value = "Done"
+            )
         val allPages = mutableListOf<NotionPageData>()
         var cursor: String? = null
 
         do {
             val query = queryBuilder.build(startCursor = cursor)
             val response = NotionService.queryDatabase(
-                apiKey = getNotionApiKey(),
-                databaseId = getDatabaseId(),
+                apiKey = notionApiKey,
+                databaseId = stringDatabaseId,
                 query = query
             )
 
@@ -37,6 +40,7 @@ internal abstract class StringboardTask : DefaultTask() {
         return allPages
     }
 
-    private fun getNotionApiKey(): String = ""  // TODO: Get from project properties
-    private fun getDatabaseId(): String = ""   // TODO: Get from project properties
+    companion object {
+        private const val OUTPUT_PATH = "app/src/main/res"
+    }
 }
