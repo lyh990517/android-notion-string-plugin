@@ -39,7 +39,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
-object XmlProcesser {
+object JsonParser {
     private enum class PropertyType(val typeName: String) {
         TITLE("title"),
         RICH_TEXT("rich_text"),
@@ -56,10 +56,10 @@ object XmlProcesser {
 
     private data class XmlData(
         val resourceId: String,
-        val stringValue: String
+        val content: String
     )
 
-    fun writeStringsXml(
+    fun createStringsXml(
         language: Language,
         dir: File,
         results: JsonArray
@@ -76,7 +76,7 @@ object XmlProcesser {
                 results
                     .map { it.processString(language = language) }
                     .forEach { xmlData ->
-                        writer.appendLine(XML_STRING_TEMPLATE.format(xmlData.resourceId, xmlData.stringValue))
+                        writer.appendLine(XML_STRING_TEMPLATE.format(xmlData.resourceId, xmlData.content))
                     }
 
                 writer.appendLine(XML_RESOURCES_CLOSE)
@@ -86,7 +86,7 @@ object XmlProcesser {
     private fun JsonElement.processString(language: Language): XmlData {
         val properties = this.jsonObject[PROPERTIES]?.jsonObject ?: return XmlData(
             resourceId = "",
-            stringValue = ""
+            content = ""
         )
         val resourceId = properties.extractRichText(key = RESOURCE_ID)
             .lowercase()
@@ -96,7 +96,7 @@ object XmlProcesser {
 
         return XmlData(
             resourceId = resourceId,
-            stringValue = processedString
+            content = processedString
         )
     }
 

@@ -33,7 +33,7 @@ internal abstract class StringboardTask : DefaultTask() {
         Language.values().forEach { language ->
             val directory = File(targetDir, language.resDir)
 
-            XmlProcesser.writeStringsXml(
+            JsonParser.createStringsXml(
                 language = language,
                 dir = directory,
                 results = JsonArray(allResults)
