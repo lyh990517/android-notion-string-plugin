@@ -1,5 +1,36 @@
 package com.yunho.notion.task
 
+import com.yunho.notion.task.Key.AMPERSAND
+import com.yunho.notion.task.Key.AMPERSAND_ESCAPED
+import com.yunho.notion.task.Key.APOSTROPHE
+import com.yunho.notion.task.Key.APOSTROPHE_ESCAPED
+import com.yunho.notion.task.Key.FORMULA
+import com.yunho.notion.task.Key.GREATER_THAN
+import com.yunho.notion.task.Key.GREATER_THAN_ESCAPED
+import com.yunho.notion.task.Key.INVALID_CHARS_REGEX
+import com.yunho.notion.task.Key.LESS_THAN
+import com.yunho.notion.task.Key.LESS_THAN_ESCAPED
+import com.yunho.notion.task.Key.MULTI_SELECT
+import com.yunho.notion.task.Key.NAME
+import com.yunho.notion.task.Key.PLACEHOLDER_FORMAT
+import com.yunho.notion.task.Key.PLACEHOLDER_REGEX
+import com.yunho.notion.task.Key.PLAIN_TEXT
+import com.yunho.notion.task.Key.PROPERTIES
+import com.yunho.notion.task.Key.QUOTE
+import com.yunho.notion.task.Key.QUOTE_ESCAPED
+import com.yunho.notion.task.Key.REPLACEMENT_CHAR
+import com.yunho.notion.task.Key.RESOURCE_ID
+import com.yunho.notion.task.Key.RESOURCE_NAME
+import com.yunho.notion.task.Key.RICH_TEXT
+import com.yunho.notion.task.Key.SELECT
+import com.yunho.notion.task.Key.STRING
+import com.yunho.notion.task.Key.TITLE
+import com.yunho.notion.task.Key.TYPE
+import com.yunho.notion.task.Key.XLIFF_TAG_TEMPLATE
+import com.yunho.notion.task.Key.XML_DECLARATION
+import com.yunho.notion.task.Key.XML_RESOURCES_CLOSE
+import com.yunho.notion.task.Key.XML_RESOURCES_OPEN
+import com.yunho.notion.task.Key.XML_STRING_TEMPLATE
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -9,48 +40,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
 object XmlProcesser {
-    private const val RESOURCE_NAME = "strings.xml"
-
-    // XML structure constants
-    private const val XML_DECLARATION = """<?xml version="1.0" encoding="utf-8"?>"""
-    private const val XML_RESOURCES_OPEN = """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">"""
-    private const val XML_RESOURCES_CLOSE = "</resources>"
-    private const val XML_STRING_TEMPLATE = """    <string name="%s">%s</string>"""
-
-    // Property key constants
-    private const val RESOURCE_ID_KEY = "Resource ID"
-
-    // JSON property keys
-    private const val TYPE_KEY = "type"
-    private const val TITLE_KEY = "title"
-    private const val RICH_TEXT_KEY = "rich_text"
-    private const val FORMULA_KEY = "formula"
-    private const val STRING_KEY = "string"
-    private const val SELECT_KEY = "select"
-    private const val MULTI_SELECT_KEY = "multi_select"
-    private const val NAME_KEY = "name"
-    private const val PLAIN_TEXT_KEY = "plain_text"
-    private const val PROPERTIES_KEY = "properties"
-
-    // XML escape characters
-    private const val AMPERSAND = "&"
-    private const val AMPERSAND_ESCAPED = "&amp;"
-    private const val LESS_THAN = "<"
-    private const val LESS_THAN_ESCAPED = "&lt;"
-    private const val GREATER_THAN = ">"
-    private const val GREATER_THAN_ESCAPED = "&gt;"
-    private const val QUOTE = "\""
-    private const val QUOTE_ESCAPED = "&quot;"
-    private const val APOSTROPHE = "'"
-    private const val APOSTROPHE_ESCAPED = "\\'"
-
-    // Placeholder processing constants
-    private const val PLACEHOLDER_REGEX = """\{([^}]+)\}"""
-    private const val PLACEHOLDER_FORMAT = "%d\$s"
-    private const val XLIFF_TAG_TEMPLATE = """<xliff:g id="%s" example="%s">%s</xliff:g>"""
-    private const val INVALID_CHARS_REGEX = "[^a-z0-9_]"
-    private const val REPLACEMENT_CHAR = "_"
-
     private enum class PropertyType(val typeName: String) {
         TITLE("title"),
         RICH_TEXT("rich_text"),
@@ -95,8 +84,11 @@ object XmlProcesser {
     }
 
     private fun JsonElement.processString(language: Language): XmlData {
-        val properties = this.jsonObject[PROPERTIES_KEY]!!.jsonObject
-        val resourceId = properties.extractRichText(key = RESOURCE_ID_KEY)
+        val properties = this.jsonObject[PROPERTIES]?.jsonObject ?: return XmlData(
+            resourceId = "",
+            stringValue = ""
+        )
+        val resourceId = properties.extractRichText(key = RESOURCE_ID)
             .lowercase()
             .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
         val stringValue = properties.extractRichText(key = language.notionColumn)
@@ -130,21 +122,21 @@ object XmlProcesser {
 
     private fun JsonObject.extractRichText(key: String): String {
         val property = this[key]?.jsonObject ?: return ""
-        val propertyType = PropertyType.fromString(property[TYPE_KEY]!!.jsonPrimitive.content)
+        val propertyType = PropertyType.fromString(property[TYPE]?.jsonPrimitive?.content ?: return "")
 
         return when (propertyType) {
-            PropertyType.TITLE -> property[TITLE_KEY]!!.jsonArray
-                .joinToString("") { it.jsonObject[PLAIN_TEXT_KEY]!!.jsonPrimitive.content }
+            PropertyType.TITLE -> property[TITLE]?.jsonArray
+                ?.joinToString("") { it.jsonObject[PLAIN_TEXT]?.jsonPrimitive?.content ?: "" } ?: ""
 
-            PropertyType.RICH_TEXT -> property[RICH_TEXT_KEY]!!.jsonArray
-                .joinToString("") { it.jsonObject[PLAIN_TEXT_KEY]!!.jsonPrimitive.content }
+            PropertyType.RICH_TEXT -> property[RICH_TEXT]?.jsonArray
+                ?.joinToString("") { it.jsonObject[PLAIN_TEXT]?.jsonPrimitive?.content ?: "" } ?: ""
 
-            PropertyType.FORMULA -> property[FORMULA_KEY]!!.jsonObject[STRING_KEY]?.jsonPrimitive?.content.orEmpty()
+            PropertyType.FORMULA -> property[FORMULA]?.jsonObject?.get(STRING)?.jsonPrimitive?.content.orEmpty()
 
-            PropertyType.SELECT -> property[SELECT_KEY]?.jsonObject?.get(NAME_KEY)?.jsonPrimitive?.content.orEmpty()
+            PropertyType.SELECT -> property[SELECT]?.jsonObject?.get(NAME)?.jsonPrimitive?.content.orEmpty()
 
-            PropertyType.MULTI_SELECT -> property[MULTI_SELECT_KEY]!!.jsonArray
-                .joinToString(", ") { it.jsonObject[NAME_KEY]!!.jsonPrimitive.content }
+            PropertyType.MULTI_SELECT -> property[MULTI_SELECT]?.jsonArray
+                ?.joinToString(", ") { it.jsonObject[NAME]?.jsonPrimitive?.content ?: "" } ?: ""
 
             null -> ""
         }
