@@ -49,22 +49,21 @@ class NotionQueryBuilder {
     }
 
     fun build(pageSize: Int = 100, startCursor: String? = null): String {
-        val joined = filters.joinToString(",\n") { it.prependIndent("      ") }
+        val joined = filters.joinToString(",\n") { it.prependIndent("        ") }
 
         val cursorPart = if (startCursor != null) """,
-      "start_cursor": "$startCursor"
-    """ else ""
+        "start_cursor": "$startCursor"""" else ""
 
         return """
-    {
-      "filter": {
-        "and": [
-            $joined
-        ]
-      },
-      "page_size": $pageSize$cursorPart
-    }
-    """.trimIndent()
+        {
+          "filter": {
+            "and": [
+                $joined
+            ]
+          },
+          "page_size": $pageSize$cursorPart
+        }
+        """.trimIndent()
     }
 
     private fun jsonString(s: String): String =
