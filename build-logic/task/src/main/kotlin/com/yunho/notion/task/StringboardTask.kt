@@ -5,7 +5,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 internal abstract class StringboardTask : DefaultTask() {
     @TaskAction
@@ -28,18 +27,9 @@ internal abstract class StringboardTask : DefaultTask() {
             hasMore = response.hasMore
         } while (hasMore)
 
-        val targetDir = "${project.rootDir}/app/src/main/res"
-
-        Language.values().forEach { language ->
-            val directory = File(targetDir, language.resDir)
-
-            JsonParser.createStringsXml(
-                language = language,
-                dir = directory,
-                results = JsonArray(allResults)
-            )
-
-            println("✅ Generated ${language.name.uppercase()} → ${directory.relativeTo(project.projectDir)}")
-        }
+        JsonParser.createStringsXml(
+            path = "${project.rootDir}/app/src/main/res",
+            results = JsonArray(allResults)
+        )
     }
 }

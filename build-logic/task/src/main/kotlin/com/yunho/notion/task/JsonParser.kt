@@ -60,27 +60,33 @@ object JsonParser {
     )
 
     fun createStringsXml(
-        language: Language,
-        dir: File,
+        path: String,
         results: JsonArray
     ) {
-        dir.mkdirs()
-        File(
-            dir,
-            RESOURCE_NAME
-        ).bufferedWriter()
-            .use { writer ->
-                writer.appendLine(XML_DECLARATION)
-                writer.appendLine(XML_RESOURCES_OPEN)
+        Language.values().forEach { language ->
+            val directory = File(path, language.resDir)
 
-                results
-                    .map { it.processString(language = language) }
-                    .forEach { xmlData ->
-                        writer.appendLine(XML_STRING_TEMPLATE.format(xmlData.resourceId, xmlData.content))
-                    }
+            directory.mkdirs()
 
-                writer.appendLine(XML_RESOURCES_CLOSE)
-            }
+            File(
+                directory,
+                RESOURCE_NAME
+            ).bufferedWriter()
+                .use { writer ->
+                    writer.appendLine(XML_DECLARATION)
+                    writer.appendLine(XML_RESOURCES_OPEN)
+
+                    results
+                        .map { it.processString(language = language) }
+                        .forEach { xmlData ->
+                            writer.appendLine(XML_STRING_TEMPLATE.format(xmlData.resourceId, xmlData.content))
+                        }
+
+                    writer.appendLine(XML_RESOURCES_CLOSE)
+                }
+
+            println("✅ Generated ${language.name.uppercase()} → ${directory.path}")
+        }
     }
 
     private fun JsonElement.processString(language: Language): XmlData {
