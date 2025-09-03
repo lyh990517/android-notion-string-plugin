@@ -1,8 +1,8 @@
 package com.yunho.notion.task
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.yunho.notion.task.NotionService.queryNotionApi
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
@@ -35,7 +35,7 @@ internal abstract class StringboardTask : DefaultTask() {
             XmlProcesser.writeStringsXml(
                 language = lang,
                 dir = dir,
-                results = JsonArray().apply { allResults.forEach { add(it) } }
+                results = JsonArray(allResults)
             )
 
             println("✅ Generated ${lang.name.uppercase()} → ${dir.relativeTo(project.projectDir)}")

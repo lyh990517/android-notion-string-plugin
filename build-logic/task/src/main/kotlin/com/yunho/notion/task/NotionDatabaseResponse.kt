@@ -1,7 +1,10 @@
 package com.yunho.notion.task
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.net.http.HttpResponse
 
 data class NotionDatabaseResponse(
@@ -16,10 +19,10 @@ data class NotionDatabaseResponse(
 
         fun create(response: HttpResponse<String>): NotionDatabaseResponse {
             val body = response.body()
-            val json = JsonParser.parseString(body).asJsonObject
-            val results = json.getAsJsonArray(RESULTS)
-            val nextCursor = json.get(NEXT_CURSOR)?.takeIf { !it.isJsonNull }?.asString
-            val hasMore = json.get(HAS_MORE)?.asBoolean ?: false
+            val json = Json.parseToJsonElement(body).jsonObject
+            val results = json[RESULTS]!!.jsonArray
+            val nextCursor = json[NEXT_CURSOR]?.takeIf { !it.toString().equals("null", true) }?.jsonPrimitive?.content
+            val hasMore = json[HAS_MORE]?.jsonPrimitive?.content?.toBoolean() ?: false
 
             return NotionDatabaseResponse(
                 results = results,

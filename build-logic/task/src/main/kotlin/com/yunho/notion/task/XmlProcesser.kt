@@ -1,8 +1,11 @@
 package com.yunho.notion.task
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
 object XmlProcesser {
@@ -92,7 +95,7 @@ object XmlProcesser {
     }
 
     private fun JsonElement.processString(language: Language): XmlData {
-        val properties = this.asJsonObject.getAsJsonObject(PROPERTIES_KEY)
+        val properties = this.jsonObject[PROPERTIES_KEY]!!.jsonObject
         val resourceId = properties.extractRichText(key = RESOURCE_ID_KEY)
             .lowercase()
             .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
@@ -126,30 +129,22 @@ object XmlProcesser {
     }
 
     private fun JsonObject.extractRichText(key: String): String {
-        val property = this[key]?.asJsonObject ?: return ""
-        val propertyType = PropertyType.fromString(property[TYPE_KEY].asString)
+        val property = this[key]?.jsonObject ?: return ""
+        val propertyType = PropertyType.fromString(property[TYPE_KEY]!!.jsonPrimitive.content)
 
         return when (propertyType) {
-            PropertyType.TITLE -> property.getAsJsonArray(TITLE_KEY)
-                .joinToString("") { it.asJsonObject[PLAIN_TEXT_KEY].asString }
+            PropertyType.TITLE -> property[TITLE_KEY]!!.jsonArray
+                .joinToString("") { it.jsonObject[PLAIN_TEXT_KEY]!!.jsonPrimitive.content }
 
-            PropertyType.RICH_TEXT -> property.getAsJsonArray(RICH_TEXT_KEY)
-                .joinToString("") { it.asJsonObject[PLAIN_TEXT_KEY].asString }
+            PropertyType.RICH_TEXT -> property[RICH_TEXT_KEY]!!.jsonArray
+                .joinToString("") { it.jsonObject[PLAIN_TEXT_KEY]!!.jsonPrimitive.content }
 
-            PropertyType.FORMULA -> property
-                .getAsJsonObject(FORMULA_KEY)
-                .get(STRING_KEY)
-                ?.asString
-                .orEmpty()
+            PropertyType.FORMULA -> property[FORMULA_KEY]!!.jsonObject[STRING_KEY]?.jsonPrimitive?.content.orEmpty()
 
-            PropertyType.SELECT -> property
-                .getAsJsonObject(SELECT_KEY)
-                ?.get(NAME_KEY)
-                ?.asString
-                .orEmpty()
+            PropertyType.SELECT -> property[SELECT_KEY]?.jsonObject?.get(NAME_KEY)?.jsonPrimitive?.content.orEmpty()
 
-            PropertyType.MULTI_SELECT -> property.getAsJsonArray(MULTI_SELECT_KEY)
-                .joinToString(", ") { it.asJsonObject[NAME_KEY].asString }
+            PropertyType.MULTI_SELECT -> property[MULTI_SELECT_KEY]!!.jsonArray
+                .joinToString(", ") { it.jsonObject[NAME_KEY]!!.jsonPrimitive.content }
 
             null -> ""
         }
