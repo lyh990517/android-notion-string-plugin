@@ -1,5 +1,6 @@
 package com.yunho.notion.task
 
+import com.yunho.notion.task.JsonParser.createStringsXml
 import com.yunho.notion.task.NotionService.queryNotionApi
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -27,9 +28,6 @@ internal abstract class StringboardTask : DefaultTask() {
             hasMore = response.hasMore
         } while (hasMore)
 
-        JsonParser.createStringsXml(
-            path = "${project.rootDir}/app/src/main/res",
-            results = JsonArray(allResults)
-        )
+        JsonArray(allResults).createStringsXml(path = "${project.rootDir}/app/src/main/res")
     }
 }

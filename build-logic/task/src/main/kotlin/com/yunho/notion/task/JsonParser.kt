@@ -19,18 +19,12 @@ import com.yunho.notion.task.Key.PROPERTIES
 import com.yunho.notion.task.Key.QUOTE
 import com.yunho.notion.task.Key.QUOTE_ESCAPED
 import com.yunho.notion.task.Key.REPLACEMENT_CHAR
-import com.yunho.notion.task.Key.RESOURCE_ID
-import com.yunho.notion.task.Key.RESOURCE_NAME
 import com.yunho.notion.task.Key.RICH_TEXT
 import com.yunho.notion.task.Key.SELECT
 import com.yunho.notion.task.Key.STRING
 import com.yunho.notion.task.Key.TITLE
 import com.yunho.notion.task.Key.TYPE
 import com.yunho.notion.task.Key.XLIFF_TAG_TEMPLATE
-import com.yunho.notion.task.Key.XML_DECLARATION
-import com.yunho.notion.task.Key.XML_RESOURCES_CLOSE
-import com.yunho.notion.task.Key.XML_RESOURCES_OPEN
-import com.yunho.notion.task.Key.XML_STRING_TEMPLATE
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
@@ -53,43 +47,34 @@ object JsonParser {
         }
     }
 
-    fun createStringsXml(
+    fun JsonArray.createStringsXml(
         path: String,
-        results: JsonArray
     ) {
         Language.values().forEach { language ->
             val directory = File(path, language.resDir)
+            val resourceName = "strings.xml"
 
             directory.mkdirs()
 
-            File(
-                directory,
-                RESOURCE_NAME
-            ).bufferedWriter()
+            File(directory, resourceName)
+                .bufferedWriter()
                 .use { writer ->
-                    writer.appendLine(XML_DECLARATION)
-                    writer.appendLine(XML_RESOURCES_OPEN)
+                    writer.appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
+                    writer.appendLine("""<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""")
 
-                    results
+                    this
                         .mapNotNull { element ->
                             element.jsonObject[PROPERTIES]?.jsonObject
                         }.map { properties ->
-                            val resourceId = properties
-                                .extractRichText(key = RESOURCE_ID)
-                                .lowercase()
-                                .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
-
-                            val content = properties
-                                .extractRichText(key = language.notionColumn)
-                                .escapeXml()
-                                .processPlaceholders()
+                            val resourceId = properties.extractId()
+                            val content = properties.extractString(language)
 
                             resourceId to content
                         }.forEach { (resourceId, content) ->
-                            writer.appendLine(XML_STRING_TEMPLATE.format(resourceId, content))
+                            writer.appendLine("""    <string name="$resourceId">$content</string>""")
                         }
 
-                    writer.appendLine(XML_RESOURCES_CLOSE)
+                    writer.appendLine("</resources>")
                 }
 
             println("✅ Generated ${language.name.uppercase()} → ${directory.path}")
@@ -115,6 +100,14 @@ object JsonParser {
             tag
         }
     }
+
+    private fun JsonObject.extractId() = extractRichText(key = "Resource ID")
+        .lowercase()
+        .replace(Regex(INVALID_CHARS_REGEX), REPLACEMENT_CHAR)
+
+    private fun JsonObject.extractString(language: Language) = extractRichText(key = language.notionColumn)
+        .escapeXml()
+        .processPlaceholders()
 
     private fun JsonObject.extractRichText(key: String): String {
         val property = this[key]?.jsonObject ?: return ""

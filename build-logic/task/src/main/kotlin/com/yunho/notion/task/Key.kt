@@ -1,15 +1,6 @@
 package com.yunho.notion.task
 
 object Key {
-    const val RESOURCE_NAME = "strings.xml"
-
-    const val XML_DECLARATION = """<?xml version="1.0" encoding="utf-8"?>"""
-    const val XML_RESOURCES_OPEN = """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">"""
-    const val XML_RESOURCES_CLOSE = "</resources>"
-    const val XML_STRING_TEMPLATE = """    <string name="%s">%s</string>"""
-
-    const val RESOURCE_ID = "Resource ID"
-
     const val TYPE = "type"
     const val TITLE = "title"
     const val RICH_TEXT = "rich_text"

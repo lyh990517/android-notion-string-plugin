@@ -1,7 +1,5 @@
 package com.yunho.notion.task
 
-import java.io.File
-
 enum class Language(
     val notionColumn: String,
     val resDir: String
@@ -17,13 +15,5 @@ enum class Language(
     ENG(
         notionColumn = "String: BASE",
         resDir = "values"
-    );
-
-    companion object {
-        fun createDir(baseDir: File): Map<Language, File> {
-            return values().associateWith { language ->
-                File(baseDir, language.resDir)
-            }
-        }
-    }
+    )
 }
