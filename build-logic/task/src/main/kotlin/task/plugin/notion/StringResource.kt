@@ -4,22 +4,20 @@ import task.plugin.notion.model.Language
 import task.plugin.notion.model.NotionPage
 import java.io.File
 
-object StringResource {
-    private const val STRINGS_XML = "strings.xml"
-    private const val XML_HEADER = """<?xml version="1.0" encoding="utf-8"?>"""
-    private const val RESOURCES_OPEN = """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">"""
-    private const val RESOURCES_CLOSE = """</resources>"""
-
+class StringResource(
+    private val notionConfig: NotionConfig
+) {
     fun create(
         pages: List<NotionPage>,
-        outputDir: String
     ) {
-        Language.values().forEach { language ->
-            createForLanguage(
-                pages = pages,
-                language = language,
-                outputDir = outputDir
-            )
+        with(notionConfig) {
+            languages.forEach { language ->
+                createForLanguage(
+                    pages = pages,
+                    language = language,
+                    outputDir = outputDir
+                )
+            }
         }
     }
 
@@ -47,4 +45,10 @@ object StringResource {
         println("✅ Generated ${language.javaClass.simpleName} → ${directory.relativeTo(File(outputDir)).path}")
     }
 
+    companion object {
+        private const val STRINGS_XML = "strings.xml"
+        private const val XML_HEADER = """<?xml version="1.0" encoding="utf-8"?>"""
+        private const val RESOURCES_OPEN = """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">"""
+        private const val RESOURCES_CLOSE = """</resources>"""
+    }
 }

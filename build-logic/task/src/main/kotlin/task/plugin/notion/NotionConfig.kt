@@ -1,5 +1,6 @@
 package task.plugin.notion
 
+import task.plugin.notion.model.Language
 import task.plugin.notion.query.NotionQueryBuilder
 
 open class NotionConfig {
@@ -7,4 +8,5 @@ open class NotionConfig {
     var dataSourceId: String = ""
     var outputDir: String = ""
     var queryBuilder: NotionQueryBuilder = NotionQueryBuilder()
+    var languages: List<Language> = listOf()
 }

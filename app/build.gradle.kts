@@ -1,3 +1,4 @@
+import task.plugin.notion.model.Language
 import task.plugin.notion.query.NotionQueryBuilder
 import task.plugin.notion.query.sort.Direction
 import task.plugin.notion.query.sort.Timestamp
@@ -63,6 +64,11 @@ stringboard {
             property { "Resource ID" by Direction.DESCENDING }
             timestamp { Timestamp.CREATED_TIME by Direction.ASCENDING }
         }
+    languages = listOf(
+        Language.Kor("String: KOR"),
+        Language.Jpn("String: JPN"),
+        Language.Eng("String: BASE")
+    )
 }
 
 dependencies {

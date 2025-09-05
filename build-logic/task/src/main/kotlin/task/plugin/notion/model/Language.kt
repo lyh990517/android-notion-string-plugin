@@ -15,12 +15,4 @@ sealed interface Language {
     data class Eng(override val property: String) : Language {
         override val resDir: String = "values"
     }
-
-    companion object {
-        val KOR = Kor("String: KOR")
-        val JPN = Jpn("String: JPN")
-        val ENG = Eng("String: BASE")
-
-        fun values(): List<Language> = listOf(KOR, JPN, ENG)
-    }
 }

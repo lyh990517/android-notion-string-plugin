@@ -24,13 +24,16 @@ data class NotionPage(
     }
 
     companion object {
-        fun fromJsonElement(element: JsonElement): NotionPage? {
+        fun fromJsonElement(
+            languages: List<Language>,
+            element: JsonElement
+        ): NotionPage? {
             val properties = element.jsonObject["properties"]?.jsonObject ?: return null
 
             val resourceId = properties.extractResourceId()
             if (resourceId.isBlank()) return null
 
-            val translations = Language.values().associateWith { language ->
+            val translations = languages.associateWith { language ->
                 properties.extractTranslation(language)
             }
 

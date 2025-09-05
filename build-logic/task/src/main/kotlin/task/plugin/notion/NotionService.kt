@@ -51,7 +51,12 @@ class NotionService(
         val nextCursor = json[NEXT_CURSOR]?.takeUnless { it.toString() == NULL }?.jsonPrimitive?.content
         val hasMore = json[HAS_MORE]?.jsonPrimitive?.content?.toBoolean() ?: false
 
-        val pages = results.mapNotNull { NotionPage.fromJsonElement(it) }
+        val pages = results.mapNotNull {
+            NotionPage.fromJsonElement(
+                languages = notionConfig.languages,
+                element = it
+            )
+        }
 
         return NotionResponse(
             pages = pages,
