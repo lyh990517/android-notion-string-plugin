@@ -1,19 +1,26 @@
 package task.plugin.notion.model
 
-enum class Language(
-    val notionColumn: String,
+sealed interface Language {
+    val property: String
     val resDir: String
-) {
-    KOR(
-        notionColumn = "String: KOR",
-        resDir = "values-ko"
-    ),
-    JPN(
-        notionColumn = "String: JPN",
-        resDir = "values-ja"
-    ),
-    ENG(
-        notionColumn = "String: BASE",
-        resDir = "values"
-    )
+
+    data class Kor(override val property: String) : Language {
+        override val resDir: String = "values-ko"
+    }
+
+    data class Jpn(override val property: String) : Language {
+        override val resDir: String = "values-ja"
+    }
+
+    data class Eng(override val property: String) : Language {
+        override val resDir: String = "values"
+    }
+
+    companion object {
+        val KOR = Kor("String: KOR")
+        val JPN = Jpn("String: JPN")
+        val ENG = Eng("String: BASE")
+
+        fun values(): List<Language> = listOf(KOR, JPN, ENG)
+    }
 }

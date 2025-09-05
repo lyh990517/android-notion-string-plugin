@@ -44,7 +44,7 @@ data class NotionPage(
         }
 
         private fun JsonObject.extractTranslation(language: Language): String {
-            return extractProperty(language.notionColumn)
+            return extractProperty(language.property)
                 .escape()
                 .toXliff()
         }

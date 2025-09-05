@@ -44,7 +44,7 @@ object StringResource {
             writer.appendLine(RESOURCES_CLOSE)
         }
 
-        println("✅ Generated ${language.name} → ${directory.relativeTo(File(outputDir)).path}")
+        println("✅ Generated ${language.javaClass.simpleName} → ${directory.relativeTo(File(outputDir)).path}")
     }
 
 }
