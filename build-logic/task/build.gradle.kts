@@ -1,19 +1,29 @@
 plugins {
     `kotlin-dsl`
-    `java-gradle-plugin`
-    kotlin("plugin.serialization") version "2.0.0"
+    alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
 }
 
 dependencies {
-    implementation(gradleApi())
-    implementation(localGroovy())
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.kotlin.gradlePlugin)
+    implementation(libs.jetbrains.kotlinx.serialization.json)
 }
 
 gradlePlugin {
     plugins {
         create("stringboard") {
-            id = "task.notion.stringboard"
+            id = "task.plugin.notion.stringboard"
             implementationClass = "com.yunho.notion.NotionStringboardPlugin"
         }
     }
