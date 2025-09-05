@@ -1,12 +1,11 @@
 package task.plugin.notion
 
-import task.plugin.notion.NotionConfig
-import task.plugin.notion.model.NotionPage
-import task.plugin.notion.model.NotionResponse
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import task.plugin.notion.model.NotionPage
+import task.plugin.notion.model.NotionResponse
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

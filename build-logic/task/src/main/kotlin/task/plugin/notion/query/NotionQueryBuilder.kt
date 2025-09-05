@@ -6,8 +6,6 @@ import task.plugin.notion.query.filter.FilterDslContext
 import task.plugin.notion.query.sort.Sort
 import task.plugin.notion.query.sort.Sort.Companion.toJson
 import task.plugin.notion.query.sort.SortDslContext
-import kotlin.collections.isNotEmpty
-import kotlin.collections.joinToString
 
 class NotionQueryBuilder {
     private lateinit var filter: Filter
