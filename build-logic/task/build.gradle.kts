@@ -24,7 +24,7 @@ gradlePlugin {
     plugins {
         create("stringboard") {
             id = "task.plugin.notion.stringboard"
-            implementationClass = "com.yunho.notion.NotionStringboardPlugin"
+            implementationClass = "task.plugin.notion.NotionStringboardPlugin"
         }
     }
 }

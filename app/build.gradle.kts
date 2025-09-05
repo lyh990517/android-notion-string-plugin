@@ -1,6 +1,6 @@
-import com.yunho.notion.query.NotionQueryBuilder
-import com.yunho.notion.query.sort.Direction
-import com.yunho.notion.query.sort.Timestamp
+import task.plugin.notion.query.NotionQueryBuilder
+import task.plugin.notion.query.sort.Direction
+import task.plugin.notion.query.sort.Timestamp
 import java.util.Properties
 
 plugins {

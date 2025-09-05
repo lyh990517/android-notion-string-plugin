@@ -1,4 +1,4 @@
-package com.yunho.notion.ui.theme
+package task.plugin.notion.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

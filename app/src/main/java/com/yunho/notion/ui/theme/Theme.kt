@@ -1,4 +1,4 @@
-package com.yunho.notion.ui.theme
+package task.plugin.notion.ui.theme
 
 import android.app.Activity
 import android.os.Build
