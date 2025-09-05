@@ -149,20 +149,6 @@ queryBuilder = NotionQueryBuilder()
     }
 ```
 
-## Usage
-
-### Generate String Resources
-
-```bash
-./gradlew fetchStringboard
-```
-
-This generates:
-- `values/strings.xml` (English)
-- `values-ko/strings.xml` (Korean)
-- `values-ja/strings.xml` (Japanese)
-- And all other configured languages...
-
 ## Getting Notion Credentials
 
 ### 1. Create Integration
@@ -175,8 +161,7 @@ This generates:
 ### 2. Get Datasource ID
 Open your Notion database and copy datasource id
 <br>
-<img width="305" height="759" alt="스크린샷 2025-09-05 오전 11 58 46" src="https://github.com/user-attachments/assets/3310350c-b93c-4172-92cd-4f6ca66738e1" />
-
+<img width="305" height="759" alt="스크린샷 2025-09-05 오전 11 58 46" src="https://github.com/user-attachments/assets/3310350c-b93c-4172-92cd-4f6ca66738e1" />
 
 ### 3. Store Securely
 
@@ -200,6 +185,21 @@ stringboard {
     // ... other config
 }
 ```
+
+## Usage
+
+### Generate String Resources
+
+```bash
+./gradlew fetchStringboard
+```
+
+This generates:
+
+- `values/strings.xml` (English)
+- `values-ko/strings.xml` (Korean)
+- `values-ja/strings.xml` (Japanese)
+- And all other configured languages...
 
 ## Supported Languages
 
@@ -227,10 +227,12 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
+## Information
+
+- Notion API version: 2025-09-03
+
 ## Links
 
 - [GitHub Repository](https://github.com/lyh990517/notion-string-automation)
 - [Gradle Plugin Portal](https://plugins.gradle.org/plugin/io.github.lyh990517.notion-stringboard)
 - [Notion API Documentation](https://developers.notion.com/)
-
----
