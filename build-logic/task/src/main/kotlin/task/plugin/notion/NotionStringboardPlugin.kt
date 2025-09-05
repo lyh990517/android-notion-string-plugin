@@ -2,7 +2,7 @@ package task.plugin.notion
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import task.plugin.notion.extension.NotionConfig
+import task.plugin.notion.NotionConfig
 import kotlin.jvm.java
 
 class NotionStringboardPlugin : Plugin<Project> {

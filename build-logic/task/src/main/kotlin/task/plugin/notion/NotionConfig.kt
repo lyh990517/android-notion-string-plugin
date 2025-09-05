@@ -1,4 +1,4 @@
-package task.plugin.notion.extension
+package task.plugin.notion
 
 import task.plugin.notion.query.NotionQueryBuilder
 

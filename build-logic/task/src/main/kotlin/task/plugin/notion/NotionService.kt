@@ -1,6 +1,6 @@
 package task.plugin.notion
 
-import task.plugin.notion.extension.NotionConfig
+import task.plugin.notion.NotionConfig
 import task.plugin.notion.model.NotionPage
 import task.plugin.notion.model.NotionResponse
 import kotlinx.serialization.json.Json

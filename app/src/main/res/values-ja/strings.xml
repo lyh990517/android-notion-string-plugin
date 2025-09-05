@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="id_4">test</string>
-    <string name="id_2">sorry</string>
-    <string name="id_1">hello</string>
+    <string name="id_2">ごめんなさい</string>
+    <string name="id_1">こんにちは</string>
 </resources>
