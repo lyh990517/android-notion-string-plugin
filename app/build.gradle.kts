@@ -1,8 +1,13 @@
+import com.yunho.notion.query.NotionQueryBuilder
+import com.yunho.notion.query.sort.Direction
+import com.yunho.notion.query.sort.Timestamp
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.yunho.notion.task")
+    id("task.notion.stringboard")
 }
 
 android {
@@ -35,6 +40,31 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+stringboard {
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+
+    notionApiKey = localProperties.getProperty("NOTION_API_KEY", "")
+    dataSourceId = localProperties.getProperty("DATA_SOURCE_ID", "")
+    outputDir = "${project.rootDir}/app/src/main/res"
+    queryBuilder = NotionQueryBuilder()
+        .filter {
+            multiSelect { "Part" doesNotContain "Server" } and
+                    select { "Status" equals "InProgress" } and
+                    richText { "String: BASE" contains "hello" } and
+                    richText { "String: KOR" contains "안녕" } and
+                    richText { "String: JPN" contains "こんにちは" } and
+                    richText { "Resource ID" equals "id-1" } or
+                    checkBox { "Deprecated" equals true }
+        }.sort {
+            property { "Resource ID" by Direction.DESCENDING }
+            timestamp { Timestamp.CREATED_TIME by Direction.ASCENDING }
+        }
 }
 
 dependencies {

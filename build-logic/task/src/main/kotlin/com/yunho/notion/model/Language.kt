@@ -1,4 +1,4 @@
-package com.yunho.notion.task
+package com.yunho.notion.model
 
 enum class Language(
     val notionColumn: String,

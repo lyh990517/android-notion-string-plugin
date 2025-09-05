@@ -1,18 +1,30 @@
-package com.yunho.notion.task
+package com.yunho.notion.model
 
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-data class NotionPageData(
+data class NotionPage(
     val resourceId: String,
     val translations: Map<Language, String>
 ) {
+    @Serializable
+    private enum class Type {
+        @SerialName("title")
+        TITLE,
+
+        @SerialName("rich_text")
+        RICH_TEXT,
+    }
+
     companion object {
-        fun fromJsonElement(element: JsonElement): NotionPageData? {
+        fun fromJsonElement(element: JsonElement): NotionPage? {
             val properties = element.jsonObject["properties"]?.jsonObject ?: return null
 
             val resourceId = properties.extractResourceId()
@@ -22,7 +34,7 @@ data class NotionPageData(
                 properties.extractTranslation(language)
             }
 
-            return NotionPageData(resourceId, translations)
+            return NotionPage(resourceId, translations)
         }
 
         private fun JsonObject.extractResourceId(): String {
@@ -33,43 +45,40 @@ data class NotionPageData(
 
         private fun JsonObject.extractTranslation(language: Language): String {
             return extractProperty(language.notionColumn)
-                .escapeXml()
-                .processPlaceholders()
+                .escape()
+                .toXliff()
         }
 
         private fun JsonObject.extractProperty(key: String): String {
             val property = this[key]?.jsonObject ?: return ""
-            val type = property["type"]?.jsonPrimitive?.content ?: return ""
+            val typeString = property["type"]?.jsonPrimitive?.content ?: return ""
+            val type = Json.decodeFromString<Type>("\"$typeString\"")
 
             return when (type) {
-                "title" -> property["title"]?.jsonArray?.extractPlainText() ?: ""
-                "rich_text" -> property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
-                "formula" -> property["formula"]?.jsonObject?.get("string")?.jsonPrimitive?.content ?: ""
-                "select" -> property["select"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
-                "multi_select" -> property["multi_select"]?.jsonArray?.extractNames() ?: ""
-                else -> ""
+                Type.TITLE -> property["title"]?.jsonArray?.extractPlainText() ?: ""
+                Type.RICH_TEXT -> property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
             }
         }
 
         private fun JsonArray.extractPlainText(): String =
             joinToString("") { it.jsonObject["plain_text"]?.jsonPrimitive?.content ?: "" }
 
-        private fun JsonArray.extractNames(): String =
-            joinToString(", ") { it.jsonObject["name"]?.jsonPrimitive?.content ?: "" }
+        private fun String.escape(): String = replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "\\'")
+            .replace("\n", "\\n")
+            .replace("\r", "")
+            .replace("\t", " ")
 
-        private fun String.escapeXml(): String =
-            replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "\\'")
-
-        private fun String.processPlaceholders(): String {
+        private fun String.toXliff(): String {
             var index = 1
             return Regex("""\{([^}]+)\}""").replace(this) { match ->
                 val name = match.groupValues[1]
                 val idName = name.lowercase().replace(Regex("[^a-z0-9_]"), "_")
                 val placeholder = "%d\$s".format(index)
+
                 """<xliff:g id="$idName" example="$name">$placeholder</xliff:g>""".also { index++ }
             }
         }

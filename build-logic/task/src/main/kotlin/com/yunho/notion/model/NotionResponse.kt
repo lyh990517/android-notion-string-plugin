@@ -1,7 +1,7 @@
-package com.yunho.notion.task
+package com.yunho.notion.model
 
 data class NotionResponse(
-    val pages: List<NotionPageData>,
+    val pages: List<NotionPage>,
     val nextCursor: String?,
     val hasMore: Boolean
 )
