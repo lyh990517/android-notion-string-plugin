@@ -168,12 +168,11 @@ This generates:
 3. Name it and select your workspace
 4. Copy the "Internal Integration Token"
 
-### 2. Share Database
+### 2. Get Datasource ID
+Open your Notion database and copy datasource id
+<br>
+<img width="305" height="759" alt="스크린샷 2025-09-05 오전 11 58 46" src="https://github.com/user-attachments/assets/3310350c-b93c-4172-92cd-4f6ca66738e1" />
 
-1. Open your Notion database
-2. Click "Share" → "Add people"
-3. Find and add your integration
-4. Copy the database URL and extract the ID
 
 ### 3. Store Securely
 
