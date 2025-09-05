@@ -65,9 +65,9 @@ stringboard {
             timestamp { Timestamp.CREATED_TIME by Direction.ASCENDING }
         }
     languages = listOf(
-        Language.Kor("String: KOR"),
-        Language.Jpn("String: JPN"),
-        Language.Eng("String: BASE")
+        Language.Korean("String: KOR"),
+        Language.Japanese("String: JPN"),
+        Language.English("String: BASE")
     )
 }
 
