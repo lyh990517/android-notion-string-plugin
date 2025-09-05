@@ -29,7 +29,7 @@ plugins {
 stringboard {
     // Required: Your Notion credentials
     notionApiKey = "your_notion_integration_token"
-    dataSourceId = "your_notion_database_id"
+    dataSourceId = "your_notion_datasource_id"
     
     // Output directory for generated resources
     outputDir = "${project.rootDir}/app/src/main/res"
