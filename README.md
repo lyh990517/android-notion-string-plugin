@@ -71,6 +71,10 @@ Example data:
 | hello_world | Hello World! | 안녕하세요! | こんにちは！ | Published |
 | welcome_msg | Welcome | 환영합니다 | ようこそ | Published |
 
+Sample:
+<img width="1463" height="342" alt="스크린샷 2025-09-05 오후 1 28 43" src="https://github.com/user-attachments/assets/db3e09f9-7b34-407f-b626-50b01c011fc6" />
+
+
 ## Configuration Options
 
 ### Basic Configuration
