@@ -48,8 +48,8 @@ stringboard {
         localProperties.load(localPropertiesFile.inputStream())
     }
 
-    notionApiKey = localProperties.getProperty("NOTION_API_KEY", "")
-    dataSourceId = localProperties.getProperty("DATA_SOURCE_ID", "")
+    notionApiKey = localProperties.getProperty("NOTION_API_KEY")
+    dataSourceId = localProperties.getProperty("DATA_SOURCE_ID")
     outputDir = "${project.rootDir}/app/src/main/res"
     queryBuilder = NotionQueryBuilder()
         .filter {
