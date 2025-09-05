@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.task.plugin.notion.stringboard)
+    id("io.github.lyh990517.notion-stringboard") version "1.0.0"
 }
 
 android {

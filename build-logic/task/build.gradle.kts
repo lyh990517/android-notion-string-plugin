@@ -1,7 +1,13 @@
 plugins {
     `kotlin-dsl`
+    `maven-publish`
+    `java-gradle-plugin`
+    id("com.gradle.plugin-publish") version "2.0.0"
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
 }
+
+group = "io.github.lyh990517"
+version = "1.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -21,10 +27,16 @@ dependencies {
 }
 
 gradlePlugin {
+    website = "https://github.com/lyh990517/notion-string-automation"
+    vcsUrl = "https://github.com/lyh990517/notion-string-automation"
+
     plugins {
         create("stringboard") {
-            id = "task.plugin.notion.stringboard"
+            id = "io.github.lyh990517.notion-stringboard"
             implementationClass = "task.plugin.notion.NotionStringboardPlugin"
+            displayName = "Notion Stringboard Plugin"
+            description = "Generate Android string resources from Notion database"
+            tags = listOf("notion", "android", "localization", "strings")
         }
     }
 }
