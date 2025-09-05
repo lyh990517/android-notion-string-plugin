@@ -43,8 +43,8 @@ stringboard {
         Language.Korean("String: KOR"), 
         Language.Japanese("String: JPN")
     )
-    
-    // Optional: Advanced filtering and sorting
+
+    // Optional: Advanced filtering and sorting (if not specified, all data from the database will be fetched)
     queryBuilder = NotionQueryBuilder()
         .filter {
             richText { "String: BASE" contains "hello" } and
