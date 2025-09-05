@@ -55,7 +55,7 @@ stringboard {
 
 ### 3. Set up Your Notion Database
 
-Create a Notion database with these columns ([reference sample](https://wealthy-client-873.notion.site/25b8bc2ec9148051ac4beb6b9aaf914a?v=25b8bc2ec91480a299ff000c8da4da11&source=copy_link)):
+Create a Notion database with these columns ([reference sample](https://wealthy-client-873.notion.site/25b8bc2ec9148051ac4beb6b9aaf914a?v=25b8bc2ec91480a299ff000c8da4da11&source=copy_link))
 
 | Column Name  | Type      | Purpose                      |
 |--------------|-----------|------------------------------|
