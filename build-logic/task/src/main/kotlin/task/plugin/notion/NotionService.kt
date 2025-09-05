@@ -53,7 +53,7 @@ class NotionService(
 
         val pages = results.mapNotNull {
             NotionPage.fromJsonElement(
-                languages = notionConfig.languages,
+                notionConfig = notionConfig,
                 element = it
             )
         }

@@ -8,5 +8,6 @@ open class NotionConfig {
     var dataSourceId: String = ""
     var outputDir: String = ""
     var queryBuilder: NotionQueryBuilder = NotionQueryBuilder()
+    var idPropertyName: String = ""
     var languages: List<Language> = listOf()
 }

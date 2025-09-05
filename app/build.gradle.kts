@@ -64,6 +64,7 @@ stringboard {
             property { "Resource ID" by Direction.DESCENDING }
             timestamp { Timestamp.CREATED_TIME by Direction.ASCENDING }
         }
+    idPropertyName = "Resource ID"
     languages = listOf(
         Language.Korean("String: KOR"),
         Language.Japanese("String: JPN"),

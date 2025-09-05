@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import task.plugin.notion.NotionConfig
 
 data class NotionPage(
     val resourceId: String,
@@ -25,23 +26,23 @@ data class NotionPage(
 
     companion object {
         fun fromJsonElement(
-            languages: List<Language>,
+            notionConfig: NotionConfig,
             element: JsonElement
         ): NotionPage? {
             val properties = element.jsonObject["properties"]?.jsonObject ?: return null
 
-            val resourceId = properties.extractResourceId()
+            val resourceId = properties.extractResourceId(notionConfig.idPropertyName)
             if (resourceId.isBlank()) return null
 
-            val translations = languages.associateWith { language ->
+            val translations = notionConfig.languages.associateWith { language ->
                 properties.extractTranslation(language)
             }
 
             return NotionPage(resourceId, translations)
         }
 
-        private fun JsonObject.extractResourceId(): String {
-            return extractProperty("Resource ID")
+        private fun JsonObject.extractResourceId(idPropertyName: String): String {
+            return extractProperty(idPropertyName)
                 .lowercase()
                 .replace(Regex("[^a-z0-9_]"), "_")
         }
