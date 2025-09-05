@@ -30,11 +30,14 @@ stringboard {
     // Required: Your Notion credentials
     notionApiKey = "your_notion_integration_token"
     dataSourceId = "your_notion_datasource_id"
-    
-    // Output directory for generated resources
+
+    // Required: Output directory for generated resources
     outputDir = "${project.rootDir}/app/src/main/res"
-    
-    // Define your supported languages
+
+    // Required: Column name in Notion that contains Android string resource IDs (e.g., "resource_id_1", "project_a_home_1")
+    idPropertyName = "Resource ID"
+
+    // Required: Define your supported languages
     languages = listOf(
         Language.English("String: BASE"),
         Language.Korean("String: KOR"), 
@@ -81,24 +84,10 @@ Create a Notion database with these columns:
 
 ---
 
-## ⚙️ Configuration Options
+## ⚙️ Advanced Configuration
 
 <details>
-<summary><b>📋 Basic Configuration</b></summary>
-
-```kotlin
-stringboard {
-    notionApiKey = "your_token"           // Required: Notion API key
-    dataSourceId = "database_id"          // Required: Database ID
-    outputDir = "src/main/res"            // Optional: Output directory
-    idPropertyName = "Resource ID"        // Optional: ID column name
-}
-```
-
-</details>
-
-<details>
-<summary><b>🌐 Language Support</b></summary>
+<summary><b>🌐 Extended Language Support</b></summary>
 
 The plugin supports **35+ languages**. Add any combination:
 
@@ -129,7 +118,7 @@ languages = listOf(
 </details>
 
 <details>
-<summary><b>🎯 Advanced Filtering</b></summary>
+<summary><b>🎯 Advanced Filtering & Sorting</b></summary>
 
 Use the powerful query builder to filter your data:
 
@@ -168,16 +157,12 @@ queryBuilder = NotionQueryBuilder()
 
 ## 🔑 Getting Notion Credentials
 
-### 1️⃣ Create Integration
+### Create Integration & Get Credentials
 
 1. Go to [🔗 Notion Integrations](https://www.notion.so/my-integrations)
-2. Click **"New integration"**
-3. Name it and select your workspace
-4. Copy the **"Internal Integration Token"**
-
-### 2️⃣ Get Datasource ID
-
-Open your Notion database and copy datasource id:
+2. Click **"New integration"**, name it and select your workspace
+3. Copy the **"Internal Integration Token"**
+4. Open your Notion database and copy the datasource ID:
 
 <details>
 <summary>📸 <b>See screenshot</b></summary>
@@ -186,7 +171,7 @@ Open your Notion database and copy datasource id:
 
 </details>
 
-### 3️⃣ Store Securely
+### Secure Storage
 
 Add to your `local.properties`:
 
