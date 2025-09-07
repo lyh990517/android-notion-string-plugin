@@ -27,8 +27,8 @@ dependencies {
 }
 
 gradlePlugin {
-    website = "https://github.com/lyh990517/notion-string-automation"
-    vcsUrl = "https://github.com/lyh990517/notion-string-automation"
+    website = "https://github.com/lyh990517/android-notion-string-plugin"
+    vcsUrl = "https://github.com/lyh990517/android-notion-string-plugin"
 
     plugins {
         create("stringboard") {
@@ -36,7 +36,7 @@ gradlePlugin {
             implementationClass = "task.plugin.notion.NotionStringboardPlugin"
             displayName = "Notion Stringboard Plugin"
             description = "A Gradle plugin that automatically generates Android string resources from Notion database with multi-language support"
-            tags = listOf("notion", "android", "localization", "strings", "i18n", "automation")
+            tags = listOf("notion", "android", "localization", "strings", "automation")
         }
     }
 }
@@ -47,7 +47,7 @@ publishing {
             pom {
                 name.set("Notion Stringboard Plugin")
                 description.set("A Gradle plugin that automatically generates Android string resources from Notion database")
-                url.set("https://github.com/lyh990517/notion-string-automation")
+                url.set("https://github.com/lyh990517/android-notion-string-plugin")
                 licenses {
                     license {
                         name.set("MIT License")
@@ -62,9 +62,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/lyh990517/notion-string-automation.git")
-                    developerConnection.set("scm:git:ssh://github.com/lyh990517/notion-string-automation.git")
-                    url.set("https://github.com/lyh990517/notion-string-automation")
+                    connection.set("scm:git:git://github.com/lyh990517/android-notion-string-plugin.git")
+                    developerConnection.set("scm:git:ssh://github.com/lyh990517/android-notion-string-plugin.git")
+                    url.set("https://github.com/lyh990517/android-notion-string-plugin")
                 }
             }
         }
