@@ -255,7 +255,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🔗 Links
 
-- 📦 [**GitHub Repository**](https://github.com/lyh990517/notion-string-automation)
 - 🔌 [**Gradle Plugin Portal**](https://plugins.gradle.org/plugin/io.github.lyh990517.notion-stringboard)
 - 📚 [**Notion API Documentation**](https://developers.notion.com/)
 
