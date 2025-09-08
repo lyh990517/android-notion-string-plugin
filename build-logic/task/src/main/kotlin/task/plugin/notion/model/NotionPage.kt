@@ -37,21 +37,14 @@ data class NotionPage(
                 return null
             }
 
-            logger?.lifecycle("🔍 Extracting resource ID from property: ${notionConfig.idPropertyName}")
             val resourceId = properties.extractResourceId(notionConfig.idPropertyName, logger)
             if (resourceId.isBlank()) {
-                logger?.lifecycle("❌ Resource ID is blank")
+                logger?.lifecycle("❌ Resource ID is blank for property: '${notionConfig.idPropertyName}'")
                 return null
             }
 
-            logger?.lifecycle("✅ Found resource ID: $resourceId")
-            logger?.lifecycle("🌍 Extracting translations for ${notionConfig.languages.size} languages")
-
             val translations = notionConfig.languages.associateWith { language ->
-                logger?.lifecycle("🔍 Extracting translation for ${language.javaClass.simpleName} from property: ${language.property}")
-                val translation = properties.extractTranslation(language, logger)
-                logger?.lifecycle("✅ Translation for ${language.javaClass.simpleName}: '$translation'")
-                translation
+                properties.extractTranslation(language, logger)
             }
 
             return NotionPage(resourceId, translations)
@@ -91,17 +84,8 @@ data class NotionPage(
             }
 
             return when (type) {
-                Type.TITLE -> {
-                    val result = property["title"]?.jsonArray?.extractPlainText() ?: ""
-                    logger?.lifecycle("📝 Extracted title: '$result'")
-                    result
-                }
-
-                Type.RICH_TEXT -> {
-                    val result = property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
-                    logger?.lifecycle("📝 Extracted rich_text: '$result'")
-                    result
-                }
+                Type.TITLE -> property["title"]?.jsonArray?.extractPlainText() ?: ""
+                Type.RICH_TEXT -> property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
             }
         }
 

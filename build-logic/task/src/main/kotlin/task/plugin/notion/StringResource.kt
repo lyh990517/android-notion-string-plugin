@@ -12,6 +12,13 @@ class StringResource(
     fun create(
         pages: List<NotionPage>,
     ) {
+        logger.lifecycle("📝 Generating string resources for ${pages.size} pages")
+
+        if (pages.isEmpty()) {
+            logger.lifecycle("⚠️ No pages to process, skipping string resource generation")
+            return
+        }
+
         with(notionConfig) {
             languages.forEach { language ->
                 createForLanguage(
@@ -37,7 +44,8 @@ class StringResource(
 
             pages.forEach { page ->
                 with(page) {
-                    writer.appendLine("""    <string name="$resourceId">${translations[language].orEmpty()}</string>""")
+                    val translation = translations[language].orEmpty()
+                    writer.appendLine("""    <string name="$resourceId">$translation</string>""")
                 }
             }
 
