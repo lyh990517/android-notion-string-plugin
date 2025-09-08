@@ -3,9 +3,11 @@ package task.plugin.notion
 import task.plugin.notion.model.Language
 import task.plugin.notion.model.NotionPage
 import java.io.File
+import org.gradle.api.logging.Logger
 
 class StringResource(
-    private val notionConfig: NotionConfig
+    private val notionConfig: NotionConfig,
+    private val logger: Logger
 ) {
     fun create(
         pages: List<NotionPage>,
@@ -42,7 +44,7 @@ class StringResource(
             writer.appendLine(RESOURCES_CLOSE)
         }
 
-        println("✅ Generated ${language.javaClass.simpleName} → ${directory.relativeTo(File(outputDir)).path}")
+        logger.lifecycle("✅ Generated ${language.javaClass.simpleName} → ${directory.relativeTo(File(outputDir)).path}")
     }
 
     companion object {

@@ -12,8 +12,8 @@ internal abstract class StringboardTask : DefaultTask() {
 
     @TaskAction
     fun download() {
-        val service = NotionService(notionConfig)
-        val stringResource = StringResource(notionConfig)
+        val service = NotionService(notionConfig, logger)
+        val stringResource = StringResource(notionConfig, logger)
         val notionPages = service.requestPages()
 
         stringResource.create(notionPages)

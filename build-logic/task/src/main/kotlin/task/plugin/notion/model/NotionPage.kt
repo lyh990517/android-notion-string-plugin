@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.gradle.api.logging.Logger
 import task.plugin.notion.NotionConfig
 
 data class NotionPage(
@@ -27,40 +28,80 @@ data class NotionPage(
     companion object {
         fun fromJsonElement(
             notionConfig: NotionConfig,
-            element: JsonElement
+            element: JsonElement,
+            logger: Logger? = null
         ): NotionPage? {
-            val properties = element.jsonObject["properties"]?.jsonObject ?: return null
+            val properties = element.jsonObject["properties"]?.jsonObject
+            if (properties == null) {
+                logger?.lifecycle("❌ No properties found in element")
+                return null
+            }
 
-            val resourceId = properties.extractResourceId(notionConfig.idPropertyName)
-            if (resourceId.isBlank()) return null
+            logger?.lifecycle("🔍 Extracting resource ID from property: ${notionConfig.idPropertyName}")
+            val resourceId = properties.extractResourceId(notionConfig.idPropertyName, logger)
+            if (resourceId.isBlank()) {
+                logger?.lifecycle("❌ Resource ID is blank")
+                return null
+            }
+
+            logger?.lifecycle("✅ Found resource ID: $resourceId")
+            logger?.lifecycle("🌍 Extracting translations for ${notionConfig.languages.size} languages")
 
             val translations = notionConfig.languages.associateWith { language ->
-                properties.extractTranslation(language)
+                logger?.lifecycle("🔍 Extracting translation for ${language.javaClass.simpleName} from property: ${language.property}")
+                val translation = properties.extractTranslation(language, logger)
+                logger?.lifecycle("✅ Translation for ${language.javaClass.simpleName}: '$translation'")
+                translation
             }
 
             return NotionPage(resourceId, translations)
         }
 
-        private fun JsonObject.extractResourceId(idPropertyName: String): String {
-            return extractProperty(idPropertyName)
+        private fun JsonObject.extractResourceId(idPropertyName: String, logger: Logger? = null): String {
+            val extracted = extractProperty(idPropertyName, logger)
+            return extracted
                 .lowercase()
                 .replace(Regex("[^a-z0-9_]"), "_")
         }
 
-        private fun JsonObject.extractTranslation(language: Language): String {
-            return extractProperty(language.property)
+        private fun JsonObject.extractTranslation(language: Language, logger: Logger? = null): String {
+            return extractProperty(language.property, logger)
                 .escape()
                 .toXliff()
         }
 
-        private fun JsonObject.extractProperty(key: String): String {
-            val property = this[key]?.jsonObject ?: return ""
-            val typeString = property["type"]?.jsonPrimitive?.content ?: return ""
-            val type = Json.decodeFromString<Type>("\"$typeString\"")
+        private fun JsonObject.extractProperty(key: String, logger: Logger? = null): String {
+            val property = this[key]?.jsonObject
+            if (property == null) {
+                logger?.lifecycle("❌ Property '$key' not found")
+                return ""
+            }
+
+            val typeString = property["type"]?.jsonPrimitive?.content
+            if (typeString == null) {
+                logger?.lifecycle("❌ Type not found for property '$key'")
+                return ""
+            }
+
+            val type = try {
+                Json.decodeFromString<Type>("\"$typeString\"")
+            } catch (e: Exception) {
+                logger?.lifecycle("❌ Unknown type '$typeString' for property '$key'")
+                return ""
+            }
 
             return when (type) {
-                Type.TITLE -> property["title"]?.jsonArray?.extractPlainText() ?: ""
-                Type.RICH_TEXT -> property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
+                Type.TITLE -> {
+                    val result = property["title"]?.jsonArray?.extractPlainText() ?: ""
+                    logger?.lifecycle("📝 Extracted title: '$result'")
+                    result
+                }
+
+                Type.RICH_TEXT -> {
+                    val result = property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
+                    logger?.lifecycle("📝 Extracted rich_text: '$result'")
+                    result
+                }
             }
         }
 

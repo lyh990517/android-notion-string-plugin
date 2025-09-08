@@ -37,4 +37,3 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrains-kotlin-plugin-serialization" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-task-plugin-notion-stringboard = { id = "task.plugin.notion.stringboard", version = "unspecified" }
