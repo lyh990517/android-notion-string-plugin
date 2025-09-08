@@ -8,8 +8,8 @@ import task.plugin.notion.query.sort.Sort.Companion.toJson
 import task.plugin.notion.query.sort.SortDslContext
 
 class NotionQueryBuilder {
-    private lateinit var filter: Filter
-    private lateinit var sorts : List<Sort>
+    private var filter: Filter? = null
+    private var sorts: List<Sort> = emptyList()
     private var cursor: String? = null
 
     fun filter(block: FilterDslContext.() -> Filter): NotionQueryBuilder {
@@ -32,7 +32,7 @@ class NotionQueryBuilder {
     }
 
     fun build(): String {
-        val filterJson = """"filter": ${filter.toJson()},"""
+        val filterJson = filter?.let { """"filter": ${it.toJson()},""" } ?: ""
         val sortsJson = if (sorts.isNotEmpty()) {
             """"sorts": [${sorts.joinToString(",") { it.toJson() }}],"""
         } else ""

@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("io.github.lyh990517.notion-stringboard") version "1.0.6"
+    id("io.github.lyh990517.notion-stringboard") version "1.0.8"
 }
 
 android {
@@ -51,19 +51,6 @@ stringboard {
     notionApiKey = localProperties.getProperty("NOTION_API_KEY")
     dataSourceId = localProperties.getProperty("DATA_SOURCE_ID")
     outputDir = "${project.rootDir}/app/src/main/res"
-    queryBuilder = NotionQueryBuilder()
-        .filter {
-            multiSelect { "Part" doesNotContain "Server" } and
-                    select { "Status" equals "InProgress" } and
-                    richText { "String: BASE" contains "hello" } and
-                    richText { "String: KOR" contains "안녕" } and
-                    richText { "String: JPN" contains "こんにちは" } and
-                    richText { "Resource ID" equals "id-1" } or
-                    checkBox { "Deprecated" equals true }
-        }.sort {
-            property { "Resource ID" by Direction.DESCENDING }
-            timestamp { Timestamp.CREATED_TIME by Direction.ASCENDING }
-        }
     idPropertyName = "Resource ID"
     languages = listOf(
         Language.Korean("String: KOR"),
