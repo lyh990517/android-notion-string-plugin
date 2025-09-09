@@ -12,12 +12,7 @@ internal abstract class StringboardTask : DefaultTask() {
 
     @TaskAction
     fun download() {
-        try {
-            notionConfig.validate()
-        } catch (e: IllegalStateException) {
-            logger.error("❌ Configuration error: ${e.message}")
-            throw e
-        }
+        notionConfig.validate()
 
         val service = NotionService(notionConfig, logger)
         val stringResource = StringResource(notionConfig, logger)

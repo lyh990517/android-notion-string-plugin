@@ -23,6 +23,9 @@ data class NotionPage(
 
         @SerialName("rich_text")
         RICH_TEXT,
+
+        @SerialName("formula")
+        FORMULA
     }
 
     companion object {
@@ -86,6 +89,7 @@ data class NotionPage(
             return when (type) {
                 Type.TITLE -> property["title"]?.jsonArray?.extractPlainText() ?: ""
                 Type.RICH_TEXT -> property["rich_text"]?.jsonArray?.extractPlainText() ?: ""
+                Type.FORMULA -> property["formula"]?.jsonObject?.get("string")?.jsonPrimitive?.content ?: ""
             }
         }
 
