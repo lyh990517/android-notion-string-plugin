@@ -9,7 +9,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.gradle.api.logging.Logger
 import task.plugin.notion.NotionConfig
 
 data class NotionPage(
@@ -31,58 +30,52 @@ data class NotionPage(
     companion object {
         fun fromJsonElement(
             notionConfig: NotionConfig,
-            element: JsonElement,
-            logger: Logger? = null
+            element: JsonElement
         ): NotionPage? {
             val properties = element.jsonObject["properties"]?.jsonObject
             if (properties == null) {
-                logger?.lifecycle("❌ No properties found in element")
                 return null
             }
 
-            val resourceId = properties.extractResourceId(notionConfig.idPropertyName, logger)
+            val resourceId = properties.extractResourceId(notionConfig.idPropertyName)
             if (resourceId.isBlank()) {
-                logger?.lifecycle("❌ Resource ID is blank for property: '${notionConfig.idPropertyName}'")
                 return null
             }
 
             val translations = notionConfig.languages.associateWith { language ->
-                properties.extractTranslation(language, logger)
+                properties.extractTranslation(language)
             }
 
             return NotionPage(resourceId, translations)
         }
 
-        private fun JsonObject.extractResourceId(idPropertyName: String, logger: Logger? = null): String {
-            val extracted = extractProperty(idPropertyName, logger)
+        private fun JsonObject.extractResourceId(idPropertyName: String): String {
+            val extracted = extractProperty(idPropertyName)
             return extracted
                 .lowercase()
                 .replace(Regex("[^a-z0-9_]"), "_")
         }
 
-        private fun JsonObject.extractTranslation(language: Language, logger: Logger? = null): String {
-            return extractProperty(language.property, logger)
+        private fun JsonObject.extractTranslation(language: Language): String {
+            return extractProperty(language.property)
                 .escape()
                 .toXliff()
         }
 
-        private fun JsonObject.extractProperty(key: String, logger: Logger? = null): String {
+        private fun JsonObject.extractProperty(key: String): String {
             val property = this[key]?.jsonObject
             if (property == null) {
-                logger?.lifecycle("❌ Property '$key' not found")
                 return ""
             }
 
             val typeString = property["type"]?.jsonPrimitive?.content
             if (typeString == null) {
-                logger?.lifecycle("❌ Type not found for property '$key'")
                 return ""
             }
 
             val type = try {
                 Json.decodeFromString<Type>("\"$typeString\"")
             } catch (e: Exception) {
-                logger?.lifecycle("❌ Unknown type '$typeString' for property '$key'")
                 return ""
             }
 

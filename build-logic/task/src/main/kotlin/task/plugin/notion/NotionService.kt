@@ -62,8 +62,7 @@ class NotionService(
         val pages = results.mapNotNull { element ->
             NotionPage.fromJsonElement(
                 notionConfig = notionConfig,
-                element = element,
-                logger = logger
+                element = element
             )
         }
 
