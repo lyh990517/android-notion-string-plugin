@@ -19,7 +19,7 @@ In your `build.gradle.kts` (Module level):
 
 ```kotlin
 plugins {
-    id("io.github.lyh990517.notion-stringboard") version "1.0.2"
+    id("io.github.lyh990517.notion-stringboard") version "1.0.10"
 }
 ```
 
